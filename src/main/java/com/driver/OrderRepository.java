@@ -14,15 +14,10 @@ public class OrderRepository {
      OrderDeliveryPartnerPairMap stores ==> key : orderId, value : deliveryPartner
      */
     Map<String,Order> orderMap;
-    Map<String, DeliveryPartner> deliveryPartnerMap;
-    Map<String,List<Order>> deliveryPartnerOrderPairMap;
-    Map<String,DeliveryPartner> OrderDeliveryPartnerPairMap;
-    OrderRepository(){
-        this.orderMap =  new TreeMap<>();
-        this.deliveryPartnerMap =  new TreeMap<>();
-        this.deliveryPartnerOrderPairMap =  new TreeMap<>();
-        this.OrderDeliveryPartnerPairMap =  new TreeMap<>();
-    }
+    Map<String, DeliveryPartner> deliveryPartnerMap = new TreeMap<>();
+    Map<String,List<Order>> deliveryPartnerOrderPairMap = new TreeMap<>();
+    Map<String,DeliveryPartner> OrderDeliveryPartnerPairMap = new TreeMap<>();
+
 
     public void addOrder(Order order){
         orderMap.put(order.getId(),order);
