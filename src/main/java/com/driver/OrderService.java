@@ -10,54 +10,114 @@ public class OrderService {
     OrderRepository orderRepository;
 
     public void addOrder( Order order){
-        orderRepository.addOrder(order);
+        try {
+            orderRepository.addOrder(order);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void addPartner( String partnerId){
-        orderRepository.addPartner(partnerId);
+        try {
+            orderRepository.addPartner(partnerId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void addOrderPartnerPair( String orderId,  String partnerId){
-         orderRepository.addOrderPartnerPair(orderId,partnerId);
+         try {
+             orderRepository.addOrderPartnerPair(orderId,partnerId);
+         }catch (Exception e){
+             e.printStackTrace();
+         }
     }
 
     public Order getOrderById( String orderId){
-        return orderRepository.getOrderById(orderId);
+        try {
+            return orderRepository.getOrderById(orderId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public DeliveryPartner getPartnerById( String partnerId){
-        return orderRepository.getPartnerById(partnerId);
+        try {
+            return orderRepository.getPartnerById(partnerId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public int getOrderCountByPartnerId( String partnerId){
-        return orderRepository.getOrderCountByPartnerId(partnerId);
+        try {
+            return orderRepository.getOrderCountByPartnerId(partnerId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public List<String> getOrdersByPartnerId( String partnerId){
-        return orderRepository.getOrdersByPartnerId(partnerId);
+        try {
+            return orderRepository.getOrdersByPartnerId(partnerId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public List<String> getAllOrders(){
-        return  orderRepository.getAllOrders();
+        try {
+            return  orderRepository.getAllOrders();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public int getCountOfUnassignedOrders(){
-        return orderRepository.getCountOfUnassignedOrders();
+        try {
+            return orderRepository.getCountOfUnassignedOrders();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public int getOrdersLeftAfterGivenTimeByPartnerId( String time, String partnerId){
-        return orderRepository.getOrdersLeftAfterGivenTimeByPartnerId(time,partnerId);
+        try {
+            return orderRepository.getOrdersLeftAfterGivenTimeByPartnerId(time,partnerId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public String getLastDeliveryTimeByPartnerId( String partnerId){
-        return orderRepository.getLastDeliveryTimeByPartnerId(partnerId);
+        try {
+            return orderRepository.getLastDeliveryTimeByPartnerId(partnerId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void deletePartnerById( String partnerId){
-        orderRepository.deletePartnerById(partnerId);
+        try {
+            orderRepository.deletePartnerById(partnerId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void deleteOrderById( String orderId){
-        orderRepository.deleteOrderById(orderId);
+        try {
+            orderRepository.deleteOrderById(orderId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
