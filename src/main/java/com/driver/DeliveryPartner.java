@@ -1,5 +1,8 @@
 package com.driver;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DeliveryPartner {
 
     private String id;
@@ -20,5 +23,15 @@ public class DeliveryPartner {
 
     public void setNumberOfOrders(Integer numberOfOrders) {
         this.numberOfOrders = numberOfOrders;
+    }
+    Map<Integer,Integer> map = new HashMap<>();
+
+    @Override
+    public String toString() {
+        return "DeliveryPartner{" +
+                "id='" + id + '\'' +
+                ", numberOfOrders=" + numberOfOrders +
+                '}';
+
     }
 }
