@@ -84,24 +84,22 @@ public class OrderRepository {
     }
 
     public String getLastDeliveryTimeByPartnerId( String partnerId){
-        int lastDelivery = Integer.MAX_VALUE;
+        int lastDelivery = Integer.MIN_VALUE;
         for (String order: deliveryPartnerOrderPairMap.get(partnerId)){
-            lastDelivery = Math.min(getOrderById(order).getDeliveryTime(),lastDelivery);
+            lastDelivery = Math.max(getOrderById(order).getDeliveryTime(),lastDelivery);
         }
+        int hrs = lastDelivery /60;
+        int min = lastDelivery %60;
+        String actualTimeHrs = "";
+        String actualTimeMin = "";
+        if(hrs < 10) actualTimeHrs += "0" + hrs;
+        else{
+            actualTimeHrs += hrs;
+        }
+        if (min < 10)actualTimeMin += "0" + min;
+        else actualTimeMin += min;
 
-        String actualTime = new String();
-        if(lastDelivery < 60){
-            if(lastDelivery < 10){
-                actualTime += "00:0" + lastDelivery;
-            }else actualTime += "00:" + lastDelivery;
-        }
-        else if(lastDelivery /60 < 10){
-            if(lastDelivery % 60 < 10) actualTime += '0'+lastDelivery/60 + ":0" + lastDelivery % 60;
-            else actualTime += '0'+lastDelivery/60 + ":" + lastDelivery % 60;
-        }
-        else actualTime += lastDelivery/60 + ":" + lastDelivery % 60;
-
-        return actualTime;
+        return  actualTimeHrs + ':' + actualTimeMin;
     }
 
     public void deletePartnerById( String partnerId){
