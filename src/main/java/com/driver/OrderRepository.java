@@ -15,7 +15,7 @@ public class OrderRepository {
      */
     Map<String,Order> orderMap;
     Map<String, DeliveryPartner> deliveryPartnerMap;
-    Map<String,List<Order>> deliveryPartnerOrderPairMap;
+    Map<String,List<String>> deliveryPartnerOrderPairMap;
     Map<String,String> OrderDeliveryPartnerPairMap;
 
     OrderRepository(){
@@ -24,116 +24,105 @@ public class OrderRepository {
         deliveryPartnerOrderPairMap = new HashMap<>();
         OrderDeliveryPartnerPairMap = new HashMap<>();
     }
-    public void addOrder(Order order)throws NullPointerException{
+    public void addOrder(Order order){
         orderMap.put(order.getId(),order);
     }
 
-    public void addPartner( String partnerId)throws NullPointerException{
+    public void addPartner( String partnerId){
         deliveryPartnerMap.put(partnerId, new DeliveryPartner(partnerId));
     }
 
-    public void addOrderPartnerPair( String orderId,  String partnerId)throws NullPointerException{
-        List<Order> order= deliveryPartnerOrderPairMap.getOrDefault(partnerId, new ArrayList<>());
-        order.add(getOrderById(orderId));
+    public void addOrderPartnerPair( String orderId,  String partnerId){
+        List<String> order= deliveryPartnerOrderPairMap.getOrDefault(partnerId, new ArrayList<>());
+        order.add(orderId);
         deliveryPartnerOrderPairMap.put(partnerId,order);
 
         OrderDeliveryPartnerPairMap.put(orderId,partnerId);
 
         // set numbers of order for delivery partner
-        int orderCount = getPartnerById(partnerId).getNumberOfOrders()+1;
-        getPartnerById(partnerId).setNumberOfOrders(orderCount);
+        int orderCount = getPartnerById(partnerId).getNumberOfOrders();
+        getPartnerById(partnerId).setNumberOfOrders(order.size());
 
     }
 
-    public Order getOrderById( String orderId)throws NullPointerException{
+    public Order getOrderById( String orderId){
         return orderMap.get(orderId);
     }
 
-    public DeliveryPartner getPartnerById( String partnerId)throws NullPointerException{
+    public DeliveryPartner getPartnerById( String partnerId){
         return deliveryPartnerMap.get(partnerId);
     }
 
-    public int getOrderCountByPartnerId( String partnerId)throws NullPointerException{
+    public int getOrderCountByPartnerId( String partnerId){
         return getPartnerById(partnerId).getNumberOfOrders();
 
     }
 
-    public List<String> getOrdersByPartnerId(String partnerId)throws NullPointerException{
-        List<String> orders = new ArrayList<>();
-        if(deliveryPartnerOrderPairMap.containsKey(partnerId)) {
-            for (Order order : deliveryPartnerOrderPairMap.get(partnerId)) {
-                orders.add(order.getId());
-            }
-        }
-        return  orders;
+    public List<String> getOrdersByPartnerId(String partnerId){
+        return  deliveryPartnerOrderPairMap.get(partnerId);
     }
 
-    public List<String> getAllOrders()throws NullPointerException{
+    public List<String> getAllOrders(){
         return new ArrayList<>(orderMap.keySet());
     }
 
-    public int getCountOfUnassignedOrders()throws NullPointerException{
-        int totalOrder = orderMap.size();
-        int assignedOrder = 0;
-        for(String partners : deliveryPartnerOrderPairMap.keySet()){
-            assignedOrder += getPartnerById(partners).getNumberOfOrders();
-        }
-        return totalOrder - assignedOrder;
+    public int getCountOfUnassignedOrders(){
+        return orderMap.size() - OrderDeliveryPartnerPairMap.size();
     }
 
-    public int getOrdersLeftAfterGivenTimeByPartnerId( String time, String partnerId)throws NullPointerException{
+    public int getOrdersLeftAfterGivenTimeByPartnerId( String time, String partnerId){
         int actualTime = Integer.parseInt(time.substring(0,2)) * 60 + Integer.parseInt(time.substring(3));
         int countOrder = 0;
-        for (Order order: deliveryPartnerOrderPairMap.get(partnerId)){
-           if(order.getDeliveryTime() > actualTime){
+        for (String order: deliveryPartnerOrderPairMap.get(partnerId)){
+           if(getOrderById(order).getDeliveryTime() > actualTime){
                countOrder++;
            }
         }
         return countOrder;
     }
 
-    public String getLastDeliveryTimeByPartnerId( String partnerId)throws NullPointerException{
+    public String getLastDeliveryTimeByPartnerId( String partnerId){
         int lastDelivery = Integer.MAX_VALUE;
-        for (Order order: deliveryPartnerOrderPairMap.get(partnerId)){
-            lastDelivery = Math.min(order.getDeliveryTime(),lastDelivery);
+        for (String order: deliveryPartnerOrderPairMap.get(partnerId)){
+            lastDelivery = Math.min(getOrderById(order).getDeliveryTime(),lastDelivery);
         }
 
         String actualTime = new String();
-        actualTime += lastDelivery/60 + ':' + lastDelivery % 60;
+        if(lastDelivery < 60){
+            if(lastDelivery < 10){
+                actualTime += "00:0" + lastDelivery;
+            }else actualTime += "00:" + lastDelivery;
+        }
+        else if(lastDelivery /60 < 10){
+            if(lastDelivery % 60 < 10) actualTime += '0'+lastDelivery/60 + ":0" + lastDelivery % 60;
+            else actualTime += '0'+lastDelivery/60 + ":" + lastDelivery % 60;
+        }
+        else actualTime += lastDelivery/60 + ":" + lastDelivery % 60;
 
         return actualTime;
     }
 
-    public void deletePartnerById( String partnerId)throws NullPointerException{
+    public void deletePartnerById( String partnerId){
         if(deliveryPartnerOrderPairMap.containsKey(partnerId)){
-            List<Order> orders = deliveryPartnerOrderPairMap.get(partnerId);
-            for(Order order: orders){
-                OrderDeliveryPartnerPairMap.remove(order.getId());
+            List<String> orders = deliveryPartnerOrderPairMap.get(partnerId);
+            for(String orderId: orders){
+                OrderDeliveryPartnerPairMap.remove(orderId);
             }
-
             deliveryPartnerOrderPairMap.remove(partnerId);
         }
 
         deliveryPartnerMap.remove(partnerId);
     }
 
-    public void deleteOrderById( String orderId)throws NullPointerException{
+    public void deleteOrderById( String orderId){
 
         if(OrderDeliveryPartnerPairMap.containsKey(orderId)) {
             String partnersId = OrderDeliveryPartnerPairMap.get(orderId);
-            List<Order> orderList = deliveryPartnerOrderPairMap.get(partnersId);
-            // index of orderId in orderList
-            int orderIdx = -1;
-            for(int i =0; i < orderList.size(); i++){
-                if(orderList.get(i).getId().equals(orderId)){
-                    orderIdx = i;
-                }
-            }
-            orderList.remove(orderIdx);
-            deliveryPartnerOrderPairMap.put(partnersId,orderList);
 
-            int getOrder = getPartnerById(partnersId).getNumberOfOrders();
-            getPartnerById(partnersId).setNumberOfOrders(getOrder-1);
+            OrderDeliveryPartnerPairMap.remove(orderId);
+            deliveryPartnerOrderPairMap.get(partnersId).remove(orderId);
+
+            getPartnerById(partnersId).setNumberOfOrders(deliveryPartnerOrderPairMap.get(partnersId).size());
         }
 
         orderMap.remove(orderId);
